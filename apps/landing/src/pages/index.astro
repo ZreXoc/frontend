@@ -31,21 +31,26 @@ const now = new Date();
 const updates = await getUpdates(now);
 const feed = updates.slice(0, 6);
 const formatDate = (date: Date) =>
-  new Intl.DateTimeFormat("zh-CN", {
-    month: "2-digit",
-    day: "2-digit",
+  new Intl.DateTimeFormat('zh-CN', {
+    month: '2-digit',
+    day: '2-digit',
   }).format(date);
 const updateRecords = updates;
-const earliestRecord = updateRecords.length
-  ? new Date(Math.min(...updateRecords.map((entry) => entry.date.getTime())))
-  : new Date(
-      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 125),
-    );
+const latestRecord = updateRecords.length
+  ? new Date(Math.max(...updateRecords.map((entry) => entry.date.getTime())))
+  : now;
+const heatmapEnd = new Date(
+  Date.UTC(
+    latestRecord.getUTCFullYear(),
+    latestRecord.getUTCMonth(),
+    latestRecord.getUTCDate() + (6 - latestRecord.getUTCDay()),
+  ),
+);
 const heatmapStart = new Date(
   Date.UTC(
-    earliestRecord.getUTCFullYear(),
-    earliestRecord.getUTCMonth(),
-    earliestRecord.getUTCDate() - earliestRecord.getUTCDay(),
+    heatmapEnd.getUTCFullYear(),
+    heatmapEnd.getUTCMonth(),
+    heatmapEnd.getUTCDate() - 125,
   ),
 );
 const recordsByDay = new Map<string, number>();
