@@ -36,21 +36,28 @@ const formatDate = (date: Date) =>
     day: '2-digit',
   }).format(date);
 const updateRecords = updates;
-const latestRecord = updateRecords.length
-  ? new Date(Math.max(...updateRecords.map((entry) => entry.date.getTime())))
+// Anchor at the latest record, but never in the future (upcoming events may
+// be dated ahead of now). heatmapEnd is the exclusive next-Sunday boundary.
+const anchor = updateRecords.length
+  ? new Date(
+      Math.min(
+        Math.max(...updateRecords.map((entry) => entry.date.getTime())),
+        now.getTime(),
+      ),
+    )
   : now;
 const heatmapEnd = new Date(
   Date.UTC(
-    latestRecord.getUTCFullYear(),
-    latestRecord.getUTCMonth(),
-    latestRecord.getUTCDate() + (6 - latestRecord.getUTCDay()),
+    anchor.getUTCFullYear(),
+    anchor.getUTCMonth(),
+    anchor.getUTCDate() + (7 - anchor.getUTCDay()),
   ),
 );
 const heatmapStart = new Date(
   Date.UTC(
     heatmapEnd.getUTCFullYear(),
     heatmapEnd.getUTCMonth(),
-    heatmapEnd.getUTCDate() - 125,
+    heatmapEnd.getUTCDate() - 126,
   ),
 );
 const recordsByDay = new Map<string, number>();
